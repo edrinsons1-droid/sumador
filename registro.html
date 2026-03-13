@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - ExpenseTracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1>Crear una cuenta</h1>
+            <p>Comienza a controlar tus gastos hoy mismo</p>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="nombre">Nombre completo</label>
+                    <input type="text" id="nombre" class="form-control" required placeholder="Tu nombre">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" class="form-control" required placeholder="tu@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña (Mín. 6 caracteres)</label>
+                    <input type="password" id="password" class="form-control" required placeholder="••••••••" minlength="6">
+                </div>
+                
+                <div id="errorMessage" class="error-message mb-4"></div>
+                
+                <button type="submit" class="btn btn-primary" id="registerBtn">
+                    <span>Registrarse</span>
+                </button>
+            </form>
+            
+            <p class="mt-4" style="margin-bottom: 0;">
+                ¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nombre = document.getElementById('nombre').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('registerBtn');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            errorDiv.classList.remove('show');
+            btn.innerHTML = '<div class="loader"></div> Creando cuenta...';
+            btn.disabled = true;
+
+            try {
+                // 1. SignUp
+                const { data: authData, error: authError } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: { full_name: nombre }
+                    }
+                });
+
+                if (authError) throw authError;
+
+                // 2. Insert into usuarios table
+                if (authData.user) {
+                    const { error: dbError } = await supabase
+                        .from('usuarios')
+                        .insert([
+                            { 
+                                id: authData.user.id, 
+                                nombre: nombre, 
+                                correo: email 
+                            }
+                        ]);
+                    
+                    if (dbError) {
+                        console.error('Error guardando perfil:', dbError);
+                        // Aún si falla este insert, el usuario de auth se creó, pero logueamos el error.
+                    }
+                }
+
+                // Redirect to dashboard
+                window.location.href = 'dashboard.html';
+
+            } catch (error) {
+                console.error("Full Registration Error:", error);
+                const errorMessage = error.message || error.error_description || "Error desconocido en el registro";
+                const errorStatus = error.status ? ` (Status: ${error.status})` : '';
+                errorDiv.textContent = errorMessage + errorStatus;
+                errorDiv.classList.add('show');
+                btn.innerHTML = '<span>Registrarse</span>';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
