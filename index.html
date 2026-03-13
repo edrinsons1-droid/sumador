@@ -3,219 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Excel App</title>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css">
+    <title>ExpenseTracker - Redirigiendo...</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <!-- Notification Toast -->
-    <div id="toast" class="toast hidden"></div>
-
-    <!-- AUTHENTICATION SECTION -->
-    <section id="auth-section" class="auth-section">
-        <div class="auth-card">
-            
-            <!-- Login Form -->
-            <div id="login-container" class="auth-container">
-                <h2>Iniciar Sesión</h2>
-                <p>Ingresa a tu cuenta para continuar</p>
-                <form id="login-form" onsubmit="event.preventDefault(); window.handleLogin();">
-                    <div class="input-group">
-                        <label for="login-email">Correo Electrónico</label>
-                        <input type="email" id="login-email" required placeholder="correo@ejemplo.com">
-                    </div>
-                    <div class="input-group">
-                        <label for="login-password">Contraseña</label>
-                        <input type="password" id="login-password" required placeholder="••••••••">
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
-                </form>
-                <div class="auth-switch">
-                    <span>¿No tienes cuenta?</span>
-                    <button type="button" id="show-register-btn" class="btn btn-text" onclick="window.switchAuthView('register')">Regístrate</button>
-                </div>
-            </div>
-
-            <!-- Register Form -->
-            <div id="register-container" class="auth-container hidden">
-                <h2>Crear Cuenta</h2>
-                <p>Regístrate para guardar tus datos</p>
-                <form id="register-form" onsubmit="event.preventDefault(); window.handleRegister();">
-                    <div class="input-group">
-                        <label for="register-name">Nombre Completo</label>
-                        <input type="text" id="register-name" required placeholder="Juan Pérez">
-                    </div>
-                    <div class="input-group">
-                        <label for="register-email">Correo Electrónico</label>
-                        <input type="email" id="register-email" required placeholder="correo@ejemplo.com">
-                    </div>
-                    <div class="input-group">
-                        <label for="register-password">Contraseña</label>
-                        <input type="password" id="register-password" required placeholder="••••••••" minlength="6">
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Registrarse</button>
-                </form>
-                <div class="auth-switch">
-                    <span>¿Ya tienes cuenta?</span>
-                    <button type="button" id="show-login-btn" class="btn btn-text" onclick="window.switchAuthView('login')">Volver al login</button>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- MAIN APP SECTION -->
-    <section id="app-section" class="app-section hidden">
-        
-        <!-- Navigation -->
-        <nav class="navbar">
-            <div class="nav-brand">
-                <span>📊 WebExcel</span>
-            </div>
-            <div class="nav-links">
-                <button class="nav-btn active" data-target="excel-view">Hoja de Cálculo</button>
-                <button class="nav-btn" data-target="personas-view">Registro Personas</button>
-                <button id="nav-admin-btn" class="nav-btn hidden" data-target="admin-view">✨ Panel Admin</button>
-            </div>
-            <div class="nav-user">
-                <span id="user-greeting">Hola, Usuario</span>
-                <button id="logout-btn" class="btn btn-danger btn-sm">Cerrar Sesión</button>
-            </div>
-        </nav>
-
-        <!-- Main Content Area -->
-        <main class="main-content">
-            
-            <!-- Excel View -->
-            <div id="excel-view" class="view-container active">
-                <div class="view-header">
-                    <h2>Tu Hoja de Cálculo</h2>
-                    <div class="excel-actions">
-                        <button id="add-row-btn" class="btn btn-outline">➕ Fila</button>
-                        <button id="add-col-btn" class="btn btn-outline">➕ Columna</button>
-                        <button id="save-excel-btn" class="btn btn-primary">💾 Guardar Manual</button>
-                        <span id="save-status" class="status-msg"></span>
-                    </div>
-                </div>
-                
-                <div class="excel-wrapper">
-                    <table id="excel-table" class="excel-table">
-                        <!-- Table structure will be generated by JS -->
-                        <thead>
-                            <tr id="excel-thead-tr"></tr>
-                        </thead>
-                        <tbody id="excel-tbody"></tbody>
-                    </table>
-                </div>
-
-                <div class="charts-section">
-                    <h3>Gráficos Automáticos</h3>
-                    <p class="chart-desc">Los gráficos se generan automáticamente usando los datos de la primera columna (etiquetas) y la segunda columna (valores) numéricos.</p>
-                    <div class="charts-grid">
-                        <div class="chart-card">
-                            <canvas id="barChart"></canvas>
-                        </div>
-                        <div class="chart-card">
-                            <canvas id="lineChart"></canvas>
-                        </div>
-                        <div class="chart-card">
-                            <canvas id="pieChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Personas View -->
-            <div id="personas-view" class="view-container hidden">
-                <div class="view-header">
-                    <h2>Registro de Personas</h2>
-                </div>
-                <div class="form-card">
-                    <form id="personas-form">
-                        <div class="input-group">
-                            <label for="persona-name">Nombre</label>
-                            <input type="text" id="persona-name" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="persona-email">Correo</label>
-                            <input type="email" id="persona-email" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="persona-phone">Teléfono</label>
-                            <input type="tel" id="persona-phone" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="persona-date">Fecha</label>
-                            <input type="date" id="persona-date" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Guardar Persona</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Admin Panel View -->
-            <div id="admin-view" class="view-container hidden">
-                <div class="view-header">
-                    <h2>Panel de Administrador</h2>
-                </div>
-                
-                <div class="admin-grid">
-                    <!-- Users List -->
-                    <div class="admin-card">
-                        <h3>Usuarios Registrados</h3>
-                        <div class="table-responsive">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Correo</th>
-                                        <th>Fecha Registro</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="admin-users-list">
-                                    <!-- Populated by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Personas List (All data) -->
-                    <div class="admin-card">
-                        <h3>Registros de Personas</h3>
-                        <div class="table-responsive">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Correo</th>
-                                        <th>Teléfono</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="admin-personas-list">
-                                    <!-- Populated by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-    </section>
-
-    <script src="app.js?v=2"></script>
+    <div class="full-page-loader">
+        <div class="loader" style="width: 50px; height: 50px; border-width: 4px;"></div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                window.location.href = 'dashboard.html';
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
 </body>
 </html>
