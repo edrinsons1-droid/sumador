@@ -200,7 +200,7 @@ function updateDashboardStats() {
             monthTotal += amount;
         }
         
-        const catName = categoryMap[exp.categoria] || 'Desconocido';
+        const catName = categoryMap[exp.categoria_id] || 'Desconocido';
         catTotals[catName] = (catTotals[catName] || 0) + amount;
     });
     
@@ -228,7 +228,7 @@ function renderTable() {
     
     let filtered = expenses.filter(exp => {
         const matchesSearch = exp.descripcion.toLowerCase().includes(searchTerm);
-        const matchesCat = filterCat ? exp.categoria === filterCat : true;
+        const matchesCat = filterCat ? exp.categoria_id === filterCat : true;
         return matchesSearch && matchesCat;
     });
     
@@ -255,7 +255,7 @@ function renderTable() {
         dateObj.setMinutes(dateObj.getMinutes() + dateObj.getTimezoneOffset());
         const displayDate = formaterDate.format(dateObj);
         
-        const catName = categoryMap[exp.categoria] || 'Desconocido';
+        const catName = categoryMap[exp.categoria_id] || 'Desconocido';
         const color = colorMap[catName] || '#9ca3af';
         
         tr.innerHTML = `
@@ -299,7 +299,7 @@ function renderCategoryChart(textColor) {
     
     let catTotals = {};
     expenses.forEach(exp => {
-        const catName = categoryMap[exp.categoria] || 'Desconocido';
+        const catName = categoryMap[exp.categoria_id] || 'Desconocido';
         catTotals[catName] = (catTotals[catName] || 0) + parseFloat(exp.monto);
     });
     
@@ -485,7 +485,7 @@ expenseForm.addEventListener('submit', async (e) => {
     const payload = {
         user_id: currentUser.id,
         descripcion: desc,
-        categoria: cat,
+        categoria_id: cat,
         monto: amount,
         fecha: dateStr
     };
@@ -527,7 +527,7 @@ window.editExpense = (id) => {
     
     document.getElementById('expenseId').value = exp.id;
     document.getElementById('expenseDesc').value = exp.descripcion;
-    document.getElementById('expenseCat').value = exp.categoria;
+    document.getElementById('expenseCat').value = exp.categoria_id;
     document.getElementById('expenseAmount').value = exp.monto;
     document.getElementById('expenseDate').value = exp.fecha;
     
@@ -571,7 +571,7 @@ exportBtn.addEventListener('click', () => {
         return {
             'Fecha': exp.fecha,
             'Descripción': exp.descripcion,
-            'Categoría': categoryMap[exp.categoria] || 'Desconocido',
+            'Categoría': categoryMap[exp.categoria_id] || 'Desconocido',
             'Monto (COP)': parseFloat(exp.monto)
         };
     });
